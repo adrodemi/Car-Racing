@@ -61,7 +61,7 @@ WheelCollider:
     m_ExtremumValue: 0.5
     m_AsymptoteSlip: 1
     m_AsymptoteValue: 0.3
-    m_Stiffness: 1
+    m_Stiffness: 5
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -595,7 +595,7 @@ WheelCollider:
     m_ExtremumValue: 0.5
     m_AsymptoteSlip: 1
     m_AsymptoteValue: 0.3
-    m_Stiffness: 1
+    m_Stiffness: 5
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -666,7 +666,7 @@ WheelCollider:
     m_ExtremumValue: 0.5
     m_AsymptoteSlip: 1
     m_AsymptoteValue: 0.3
-    m_Stiffness: 1
+    m_Stiffness: 5
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -862,7 +862,7 @@ MonoBehaviour:
   backWheelsColliders:
   - {fileID: 5390244714883205092}
   - {fileID: 292767514843093028}
-  horsePower: 250
+  horsePower: 500
   maxTurnAngle: 45
 --- !u!65 &4453692848029967768
 BoxCollider:
@@ -1200,7 +1200,7 @@ WheelCollider:
     m_ExtremumValue: 0.5
     m_AsymptoteSlip: 1
     m_AsymptoteValue: 0.3
-    m_Stiffness: 1
+    m_Stiffness: 5
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0

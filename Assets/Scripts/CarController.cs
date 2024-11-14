@@ -4,41 +4,90 @@ using UnityEngine;
 
 public class CarController : MonoBehaviour
 {
-    [SerializeField] private Transform[] wheelsTransforms;
-    [SerializeField] private Transform[] frontWheelsTransforms;
-    [SerializeField] private Transform[] backWheelsTransforms;
+    [SerializeField] private MeshRenderer[] allWheelsMeshes;
+    [SerializeField] private MeshRenderer[] frontWheelsMeshes;
+    [SerializeField] private MeshRenderer[] backWheelsMeshes;
 
-    [SerializeField] private WheelCollider[] wheelsColliders;
+    [SerializeField] private WheelCollider[] allWheelsColliders;
     [SerializeField] private WheelCollider[] frontWheelsColliders;
     [SerializeField] private WheelCollider[] backWheelsColliders;
 
-    [SerializeField] private float horsePower, maxTurnAngle;
+    private float gasInput, brakeInput, steeringInput;
 
-    private void FixedUpdate()
+    public float motorPower, brakePower;
+
+    private float speed, slipAngle;
+
+    public AnimationCurve steeringCurve;
+
+    private Rigidbody playerRb;
+    private void Awake()
     {
-        float verticalInput = Input.GetAxis("MyVertical");
-        float horizontalInput = Input.GetAxis("MyHorizontal");
-        foreach (var wheel in backWheelsColliders) wheel.motorTorque = verticalInput * horsePower;
-
-        if (Input.GetKey(KeyCode.Space)) foreach (var wheel in wheelsColliders) wheel.brakeTorque = 3000f;
-
-        else foreach (var wheel in wheelsColliders) wheel.brakeTorque = 0f;
-
-
-        foreach (var wheel in frontWheelsColliders) wheel.steerAngle = horizontalInput * maxTurnAngle;
-
-        RotateWheel(wheelsColliders[0], wheelsTransforms[0]);
-        RotateWheel(wheelsColliders[1], wheelsTransforms[1]);
-        RotateWheel(wheelsColliders[2], wheelsTransforms[2]);
-        RotateWheel(wheelsColliders[3], wheelsTransforms[3]);
+        playerRb = GetComponent<Rigidbody>();
     }
+    private void Update()
+    {
+        CheckInput();
+        ApplySteering();
+        ApplyWheelUpdate();
+        speed = playerRb.velocity.magnitude;
+        if (Input.GetKeyDown(KeyCode.Space)) foreach (var wheel in backWheelsColliders) wheel.brakeTorque = 3000f;
+        else
+        {
+            ApplyMotor();
+            ApplyBrake();
+        }
+    }
+    private void CheckInput()
+    {
+        gasInput = Input.GetAxis("MyVertical");
+        steeringInput = Input.GetAxis("MyHorizontal");
 
-    private void RotateWheel(WheelCollider collider, Transform transform)
+        slipAngle = Vector3.Angle(transform.forward, playerRb.velocity - transform.forward);
+        if (slipAngle < 120f)
+        {
+            if (gasInput < 0)
+            {
+                brakeInput = Mathf.Abs(gasInput);
+                gasInput = 0;
+            }
+            else
+                brakeInput = 0;
+        }
+        else
+            brakeInput = 0;
+    }
+    private void ApplyMotor()
+    {
+        backWheelsColliders[0].motorTorque = motorPower * gasInput;
+        backWheelsColliders[1].motorTorque = motorPower * gasInput;
+    }
+    private void ApplyBrake()
+    {
+        foreach (var wheel in frontWheelsColliders)
+            wheel.brakeTorque = brakeInput * 0.7f;
+        foreach (var wheel in backWheelsColliders)
+            wheel.brakeTorque = brakeInput * 0.3f;
+    }
+    private void ApplySteering()
+    {
+        float steeringAngle = steeringInput * steeringCurve.Evaluate(speed);
+        frontWheelsColliders[0].steerAngle = steeringAngle;
+        frontWheelsColliders[1].steerAngle = steeringAngle;
+    }
+    private void ApplyWheelUpdate()
+    {
+        UpdateWheel(allWheelsColliders[0], allWheelsMeshes[0]);
+        UpdateWheel(allWheelsColliders[1], allWheelsMeshes[1]);
+        UpdateWheel(allWheelsColliders[2], allWheelsMeshes[2]);
+        UpdateWheel(allWheelsColliders[3], allWheelsMeshes[3]);
+    }
+    private void UpdateWheel(WheelCollider collider, MeshRenderer mesh)
     {
         Vector3 position; Quaternion rotation;
 
         collider.GetWorldPose(out position, out rotation);
 
-        transform.rotation = rotation; transform.position = position;
+        mesh.transform.position = position; mesh.transform.rotation = rotation;
     }
 }

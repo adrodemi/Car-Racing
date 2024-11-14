@@ -2450,7 +2450,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   horsePower: 300
-  turnSpeed: 40
   speedometerText: {fileID: 967503120}
   rpmText: {fileID: 49644543}
   allWheels:
